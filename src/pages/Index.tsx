@@ -7,7 +7,7 @@ import ActivitySuggestion from '@/components/ActivitySuggestion';
 import LocationSearch from '@/components/LocationSearch';
 import { fetchWeatherData, getActivitySuggestions } from '@/lib/weatherApi';
 import { WeatherData } from '@/lib/types';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 
 const Index = () => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
