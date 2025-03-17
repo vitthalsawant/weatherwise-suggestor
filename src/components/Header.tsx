@@ -7,9 +7,16 @@ import FadeIn from './transitions/FadeIn';
 interface HeaderProps {
   location: string;
   onLocationClick: () => void;
+  activeSection: string;
+  onSectionChange: (section: string) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ location, onLocationClick }) => {
+const Header: React.FC<HeaderProps> = ({ 
+  location, 
+  onLocationClick, 
+  activeSection,
+  onSectionChange 
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const toggleMenu = () => {
@@ -48,7 +55,10 @@ const Header: React.FC<HeaderProps> = ({ location, onLocationClick }) => {
         </div>
         
         <nav className="hidden lg:flex items-center space-x-1">
-          <NavLinks />
+          <NavLinks 
+            activeSection={activeSection} 
+            onSectionChange={onSectionChange} 
+          />
         </nav>
       </div>
       
@@ -60,7 +70,14 @@ const Header: React.FC<HeaderProps> = ({ location, onLocationClick }) => {
         )}
       >
         <div className="flex flex-col items-center justify-center h-full space-y-8">
-          <NavLinks vertical onClick={() => setIsMenuOpen(false)} />
+          <NavLinks 
+            vertical 
+            activeSection={activeSection}
+            onSectionChange={(section) => {
+              onSectionChange(section);
+              setIsMenuOpen(false);
+            }} 
+          />
         </div>
       </div>
     </header>
@@ -69,36 +86,45 @@ const Header: React.FC<HeaderProps> = ({ location, onLocationClick }) => {
 
 interface NavLinksProps {
   vertical?: boolean;
-  onClick?: () => void;
+  activeSection: string;
+  onSectionChange: (section: string) => void;
 }
 
-const NavLinks: React.FC<NavLinksProps> = ({ vertical = false, onClick }) => {
+const NavLinks: React.FC<NavLinksProps> = ({ 
+  vertical = false, 
+  activeSection,
+  onSectionChange 
+}) => {
   const links = [
-    { name: "Today", href: "#" },
-    { name: "Forecast", href: "#" },
-    { name: "Suggestions", href: "#" },
-    { name: "Settings", href: "#" },
+    { name: "Today", id: "today" },
+    { name: "Forecast", id: "forecast" },
+    { name: "Suggestions", id: "suggestions" },
+    { name: "Settings", id: "settings" },
   ];
   
   return (
     <>
       {links.map((link, index) => (
         <FadeIn 
-          key={link.name} 
+          key={link.id} 
           delay={200 + index * 50}
           className={cn(vertical ? "block" : "inline-block")}
         >
-          <a
-            href={link.href}
-            onClick={onClick}
+          <button
+            onClick={() => onSectionChange(link.id)}
             className={cn(
               "relative px-4 py-2 text-sm font-medium transition-colors",
-              "text-muted-foreground hover:text-foreground",
+              activeSection === link.id 
+                ? "text-foreground" 
+                : "text-muted-foreground hover:text-foreground",
               vertical ? "text-lg py-3" : ""
             )}
           >
             {link.name}
-          </a>
+            {activeSection === link.id && (
+              <span className="absolute bottom-1 left-4 right-4 h-0.5 bg-primary rounded-full" />
+            )}
+          </button>
         </FadeIn>
       ))}
     </>
